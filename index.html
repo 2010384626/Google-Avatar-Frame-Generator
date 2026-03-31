@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Avatar Frame Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">GitHub Pages Ready</p>
+      <h1>Turn any avatar into the Google-style framed profile picture.</h1>
+      <p class="hero-copy">
+        Upload an image, preview the result instantly in your browser, and download the generated PNG.
+        The output uses the calibrated four-color ring layout and the thinner 4% color ring plus 2% white spacer.
+      </p>
+    </section>
+
+    <section class="workspace">
+      <div class="panel controls">
+        <h2>Upload</h2>
+        <p class="panel-copy">Images are processed locally in your browser. Nothing is sent to a server.</p>
+
+        <label class="upload-zone" for="file-input">
+          <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/bmp">
+          <span class="upload-title">Choose an avatar</span>
+          <span class="upload-subtitle">PNG, JPG, WEBP, BMP</span>
+        </label>
+
+        <div class="actions">
+          <button id="download-button" class="primary-button" disabled>Download PNG</button>
+        </div>
+
+        <dl class="spec-list">
+          <div>
+            <dt>Color ring</dt>
+            <dd>4% of output size</dd>
+          </div>
+          <div>
+            <dt>White spacer</dt>
+            <dd>2% of output size</dd>
+          </div>
+          <div>
+            <dt>Output size</dt>
+            <dd>Shorter edge of the uploaded image</dd>
+          </div>
+        </dl>
+
+        <p id="status" class="status">Waiting for an image.</p>
+      </div>
+
+      <div class="panel preview-panel">
+        <div class="preview-grid">
+          <div class="preview-card">
+            <h2>Original</h2>
+            <div class="preview-surface">
+              <img id="input-preview" alt="Uploaded avatar preview">
+              <p id="input-placeholder" class="placeholder">Your uploaded image will appear here.</p>
+            </div>
+          </div>
+
+          <div class="preview-card">
+            <h2>Generated</h2>
+            <div class="preview-surface">
+              <canvas id="output-canvas" width="512" height="512"></canvas>
+              <p id="output-placeholder" class="placeholder">The generated avatar will appear here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
