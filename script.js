@@ -80,6 +80,13 @@ function getBaseName(fileName) {
   return lastDot === -1 ? fileName : fileName.slice(0, lastDot);
 }
 
+function resolveGifDelay(delay) {
+  if (delay === undefined || delay === null || Number.isNaN(delay)) {
+    return 100;
+  }
+  return Math.max(0, Math.round(delay));
+}
+
 function calculateLayout(size) {
   return {
     borderWidth: Math.max(1, Math.round(size * BORDER_RATIO)),
@@ -275,7 +282,8 @@ async function renderAnimatedGif(file, jobId) {
 
     encoder.addFrame(outputCanvas, {
       copy: true,
-      delay: frame.delay || 100,
+      delay: resolveGifDelay(frame.delay),
+      dispose: 2,
     });
 
     previousFrame = frame;

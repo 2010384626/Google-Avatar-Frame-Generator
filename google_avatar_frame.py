@@ -138,6 +138,13 @@ def is_animated_gif(source: Image.Image) -> bool:
     return source.format == "GIF" and getattr(source, "is_animated", False) and getattr(source, "n_frames", 1) > 1
 
 
+def resolve_frame_duration(frame: Image.Image, default_duration: int) -> int:
+    duration = frame.info.get("duration")
+    if duration is None:
+        return default_duration
+    return max(0, int(duration))
+
+
 def resolve_output_path(input_path: Path, output_path: Path | None, animated_gif: bool) -> Path:
     if output_path is None:
         suffix = ".gif" if animated_gif else ".png"
@@ -158,14 +165,17 @@ def generate_animated_gif(
 ) -> Path:
     frames = []
     durations = []
+    disposals = []
     loop = source.info.get("loop", 0)
+    default_duration = max(0, int(source.info.get("duration", 100) or 0))
 
     for frame in ImageSequence.Iterator(source):
         rgba_frame = frame.copy().convert("RGBA")
         rendered_frame = build_avatar_canvas(rgba_frame, output_size, border_width, gap)
         palette_frame = rendered_frame.convert("P", palette=ADAPTIVE_PALETTE)
         frames.append(palette_frame)
-        durations.append(frame.info.get("duration", source.info.get("duration", 100)) or 100)
+        durations.append(resolve_frame_duration(frame, default_duration))
+        disposals.append(2)
 
     if not frames:
         raise ValueError("No GIF frames were found in the input image.")
@@ -176,7 +186,8 @@ def generate_animated_gif(
         append_images=frames[1:],
         duration=durations,
         loop=loop,
-        disposal=2,
+        disposal=disposals,
+        optimize=False,
     )
     return output_path
 
