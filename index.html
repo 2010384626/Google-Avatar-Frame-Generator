@@ -15,7 +15,7 @@
       <p class="eyebrow">GitHub Pages Ready</p>
       <h1>Turn any avatar into the Google-style framed profile picture.</h1>
       <p class="hero-copy">
-        Upload an image, preview the result instantly in your browser, and download the generated PNG.
+        Upload an image, preview the result instantly in your browser, and download the generated PNG or animated GIF.
         The output uses the calibrated four-color ring layout and the thinner 4% color ring plus 2% white spacer.
       </p>
     </section>
@@ -26,9 +26,9 @@
         <p class="panel-copy">Images are processed locally in your browser. Nothing is sent to a server.</p>
 
         <label class="upload-zone" for="file-input">
-          <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/bmp">
+          <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/bmp,image/gif">
           <span class="upload-title">Choose an avatar</span>
-          <span class="upload-subtitle">PNG, JPG, WEBP, BMP</span>
+          <span class="upload-subtitle">PNG, JPG, WEBP, BMP, GIF</span>
         </label>
 
         <div class="actions">
@@ -66,7 +66,7 @@
           <div class="preview-card">
             <h2>Generated</h2>
             <div class="preview-surface">
-              <canvas id="output-canvas" width="512" height="512"></canvas>
+              <img id="output-preview" alt="Generated avatar preview">
               <p id="output-placeholder" class="placeholder">The generated avatar will appear here.</p>
             </div>
           </div>
@@ -75,6 +75,9 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/gifuct-js/dist/gifuct-js.min.js"></script>
+  <script>window.GIFUCT = window.GIF;</script>
+  <script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

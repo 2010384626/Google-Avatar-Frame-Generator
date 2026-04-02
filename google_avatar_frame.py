@@ -5,7 +5,7 @@ import math
 from pathlib import Path
 from tkinter import Tk, filedialog
 
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageDraw, ImageOps, ImageSequence
 
 
 COLORS = {
@@ -16,6 +16,7 @@ COLORS = {
 }
 
 RESAMPLE = getattr(Image, "Resampling", Image).LANCZOS
+ADAPTIVE_PALETTE = getattr(getattr(Image, "Palette", Image), "ADAPTIVE", Image.ADAPTIVE)
 
 # Calibrated seam positions from the user's reference image.
 # Pillow angles start at 3 o'clock and increase clockwise.
@@ -44,9 +45,10 @@ def pick_image_file() -> Path | None:
     file_path = filedialog.askopenfilename(
         title="Choose an avatar image",
         filetypes=[
-            ("Image Files", "*.png;*.jpg;*.jpeg;*.webp;*.bmp"),
+            ("Image Files", "*.png;*.jpg;*.jpeg;*.webp;*.bmp;*.gif"),
             ("PNG", "*.png"),
             ("JPEG", "*.jpg;*.jpeg"),
+            ("GIF", "*.gif"),
             ("All Files", "*.*"),
         ],
     )
@@ -132,6 +134,53 @@ def build_avatar_canvas(
     return canvas
 
 
+def is_animated_gif(source: Image.Image) -> bool:
+    return source.format == "GIF" and getattr(source, "is_animated", False) and getattr(source, "n_frames", 1) > 1
+
+
+def resolve_output_path(input_path: Path, output_path: Path | None, animated_gif: bool) -> Path:
+    if output_path is None:
+        suffix = ".gif" if animated_gif else ".png"
+        return input_path.with_name(f"{input_path.stem}_google_frame{suffix}")
+
+    if animated_gif and output_path.suffix.lower() != ".gif":
+        raise ValueError("Animated GIF output must use the .gif extension.")
+
+    return output_path
+
+
+def generate_animated_gif(
+    source: Image.Image,
+    output_path: Path,
+    output_size: int,
+    border_width: int,
+    gap: int,
+) -> Path:
+    frames = []
+    durations = []
+    loop = source.info.get("loop", 0)
+
+    for frame in ImageSequence.Iterator(source):
+        rgba_frame = frame.copy().convert("RGBA")
+        rendered_frame = build_avatar_canvas(rgba_frame, output_size, border_width, gap)
+        palette_frame = rendered_frame.convert("P", palette=ADAPTIVE_PALETTE)
+        frames.append(palette_frame)
+        durations.append(frame.info.get("duration", source.info.get("duration", 100)) or 100)
+
+    if not frames:
+        raise ValueError("No GIF frames were found in the input image.")
+
+    frames[0].save(
+        output_path,
+        save_all=True,
+        append_images=frames[1:],
+        duration=durations,
+        loop=loop,
+        disposal=2,
+    )
+    return output_path
+
+
 def generate_google_style_avatar(
     input_path: Path,
     output_path: Path | None = None,
@@ -144,13 +193,17 @@ def generate_google_style_avatar(
             output_size = min(source.size)
 
         border_width, gap = calculate_layout(output_size, border_ratio, gap_ratio)
+        animated_gif = is_animated_gif(source)
+        resolved_output_path = resolve_output_path(input_path, output_path, animated_gif)
+
+        if animated_gif:
+            return generate_animated_gif(source, resolved_output_path, output_size, border_width, gap)
+
         result = build_avatar_canvas(source, output_size, border_width, gap)
 
-    if output_path is None:
-        output_path = input_path.with_name(f"{input_path.stem}_google_frame.png")
-
-    result.save(output_path)
-    return output_path
+    resolved_output_path = resolve_output_path(input_path, output_path, animated_gif=False)
+    result.save(resolved_output_path)
+    return resolved_output_path
 
 
 def parse_args() -> argparse.Namespace:
