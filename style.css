@@ -219,7 +219,7 @@ h2 {
 }
 
 #input-preview,
-#output-preview {
+#output-canvas {
   max-width: min(100%, 430px);
   max-height: min(100%, 430px);
   width: auto;

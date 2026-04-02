@@ -11,9 +11,8 @@ That is exactly why this tool exists.
 This project helps you generate a Google-style avatar locally or directly in the browser:
 
 - Upload an image and turn it into a framed avatar with the signature Google color ring
-- Support both static images and animated GIF files
 - Keep the calibrated ring proportions and segment positions
-- Export the result as a PNG or animated GIF
+- Export the result as a PNG
 - Use it online or run it from source locally
 
 ## Try It Online
