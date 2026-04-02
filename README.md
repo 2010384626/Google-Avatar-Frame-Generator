@@ -56,3 +56,8 @@ python google_avatar_frame.py your_avatar.jpg -o result.png
 This is a small utility built for a very practical reason: sometimes we just want to keep the colorful Google avatar look and use it somewhere else.
 
 If that sounds useful to you, open the online app and try it with your own profile photo.
+
+## Thanks yo Linux Do
+
+This forum has been a great help to me; I welcome everyone to browse and join.
+linux.do
